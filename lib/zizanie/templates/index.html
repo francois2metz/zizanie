@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/css/zizanie.css" />
+        <title>Pazzis</title>
+    </head>
+    <body>
+        <header>
+            <h1>Pazzis.com</h1>
+        </header>
+
+        <section class="section">
+            <form method="post" action="">
+                <fieldset>
+                    <fb:login-button show-faces="false"></fb:login-button>
+                    <label>Nom d'utilisateur
+                        <input type="text" name="login" required />
+                    </label>
+                    <label>Mot de passe
+                        <input type="password" name="pwd" required />
+                    </label>
+                    <input type="submit" value="Connexion" />
+                </fieldset>
+            </form>
+
+            <p>Bienvenue sur le site web de la famille Pazzis.<br />
+                L'accès complet au site est réservé aux membres de la famille. Pour les autres il n'y a pas grand chose à voir ...<br />
+                Si vous avez perdu votre mot de passe veuillez vous rendre sur la page mot de passe perdu. Si les problèmes de connexion persistent, contactez le webmaster.<br />
+                Si vous faite partie de la famille et que, par malheur, vous n'avez pas reçu votre identifiant et votre mot de passe, c'est que votre adresse email en notre possession est erronée. Un petit email en utilisant le formulaire de contact devrait arranger tout cela.</p>
+        </section>
+
+        <footer>
+            <p>© 2001-2010 Pazzis.com</p>
+        </footer>
+
+        <div id="fb-root"></div>
+
+        <script type="text/javascript" src="/js/modernizr-1.6.min.js"></script>
+        <script type="text/javascript" src="/js/jquery-1.4.4.min.js"></script>
+        <script type="text/javascript" src="/js/underscore-min.js"></script>
+        <script type="text/javascript" src="/js/backbone-min.js"></script>
+        <script type="text/javascript" src="/js/handlebars.js"></script>
+        <script type="text/javascript" src="/js/zizanie.js"></script>
+        <script type="text/javascript" src="http://connect.facebook.net/fr_FR/all.js"></script>
+    </body>
+</html>
