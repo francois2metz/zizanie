@@ -7,7 +7,7 @@
         login: function(e) {
             e.preventDefault();
             console.log(e);
-            $.post('/user/sign_in', {login: 'toto'}, function(data) {
+            $.post('/user/sign_in', $(e.target).serialize(), function(data) {
                 console.log('end');
             });
         },
