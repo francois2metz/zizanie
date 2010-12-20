@@ -1,7 +1,7 @@
 (function() {
     var IndexView = Backbone.View.extend({
         events: {
-            "submit form" : "login"
+//            "submit form" : "login"
         },
 
         login: function(e) {

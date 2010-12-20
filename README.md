@@ -11,6 +11,7 @@ Zizanie want to facilitate communication between family members.
 * nodejs
 * express
 * yaml
+* less
 
 ## Install
 
