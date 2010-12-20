@@ -9,13 +9,18 @@ Zizanie want to facilitate communication between family members.
 
 * mongodb
 * nodejs
-* optparse
 * express
 * yaml
 
 ## Install
 
     cp zizanie.yaml.sample zizanie.yaml
+
+## Utils
+
+Add user:
+
+    ./lib/zizanie_ctl.js adduser username
 
 ## License
 
