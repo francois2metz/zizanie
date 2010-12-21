@@ -29,12 +29,26 @@
                     cookie : true, // enable cookies to allow the server to access the session
                     xfbml  : true  // parse XFBML
                 });
+                FB.Event.subscribe('auth.sessionChange', function(response) {
+                    if (response.session) {
+                        $('.facebook-login').hide();
+                    } else {
+
+                    }
+                });
+                FB.getLoginStatus(function(response) {
+                    if (response.session) {
+                        $('.facebook-login').hide();
+                    } else {
+
+                    }
+                });
                 FB.XFBML.parse();
             };
         },
 
         index: function() {
-            new IndexView({el: $('.section')});
+            new IndexView({el: $('body')});
         }
     });
 
