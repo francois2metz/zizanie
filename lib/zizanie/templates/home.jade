@@ -1,0 +1,14 @@
+section.section
+  form(method="post", action="/user/sign_in")
+    fieldset
+      fb:login-button.facebook-login(perms="email", show-faces="false")
+      label Nom d'utilisateur
+        input(type="text", name="username", required)
+      label Mot de passe
+        input(type="password", name="password", required)
+      input(type="submit", value="Connexion")
+
+  p Bienvenue sur le site web de la famille Pazzis.
+  | L'accès complet au site est réservé aux membres de la famille. Pour les autres il n'y a pas grand chose à voir ...
+  | Si vous avez perdu votre mot de passe veuillez vous rendre sur la page mot de passe perdu. Si les problèmes de connexion persistent, contactez le webmaster.
+  | Si vous faite partie de la famille et que, par malheur, vous n'avez pas reçu votre identifiant et votre mot de passe, c'est que votre adresse email en notre possession est erronée. Un petit email en utilisant le formulaire de contact devrait arranger tout cela.</p>
