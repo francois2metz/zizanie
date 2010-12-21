@@ -12,6 +12,7 @@ Zizanie want to facilitate communication between family members.
 * express
 * yaml
 * less
+* spore
 
 ## Install
 
