@@ -7,6 +7,10 @@ html
     header
       h1 Pazzis.com
 
+    #sidebar
+      form(action="/user/logout", method="post")
+        input(type="submit", value="Logout")
+
     body!= body
 
     footer

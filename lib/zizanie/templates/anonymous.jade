@@ -7,8 +7,6 @@ html
     header
       h1 Pazzis.com
 
-    body!= body
-
     #sidebar
       form(method="post", action="/user/sign_in")
         fieldset
@@ -19,6 +17,8 @@ html
           label Mot de passe
             input(type="password", name="password", required)
           input(type="submit", value="Connexion")
+
+    body!= body
 
     footer
       p © 2001-2010 Pazzis.com
