@@ -1,12 +1,37 @@
-h1 {
-    
+.border-radius (@radius) {
+    border-radius: @radius;
 }
 
-.section {
-    margin: 0 5em;
-    padding: 1em;
+
+header {
+    padding: 0.5em;
+    margin-bottom: 0.5em;
     border: solid 1px black;
-    line-height: 1.5em;
+    background-color: #f5f5f5;
+
+    .border-radius(7px);
+
+    h1 {
+        margin:0;
+        padding: 0;
+    }
+}
+
+#sidebar {
+    width: 15em;
+    border: solid 1px black;
+    background-color: #f5f5f5;
+
+    .border-radius(7px);
+}
+
+fieldset {
+    border:0;
+}
+
+#main {
+    margin-left: 16em;
+    float: right;
     p {
         text-indent: 1em;
     }
