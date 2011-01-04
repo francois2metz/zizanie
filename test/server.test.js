@@ -16,19 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 var express = require('express');
-var zizanie = require('../lib/zizanie/server').zizanie;
-var models = require('../lib/zizanie/models');
+var zizanie = require('../zizanie/server').zizanie;
+var models = require('../zizanie/models');
 var assert = require('assert');
 
 function getInitConfig(callback) {
-    require('../lib/zizanie/config').getConfig(function(config) {
+    require('../zizanie/config').getConfig(function(config) {
         // override default database
         config.mongodb.db_name = 'zizanie-test';
         var mongoose = models.configure(config);
         callback(config, mongoose);
     });
 }
-
+/**
+ * Factories
+ */
+function Factories() {};
+Factories.prototype = {};
+Factories.createUser = function(db) {
+    var user = new (db.model('User'))();
+    user.username = "chuck";
+    user.auth.password = "norris";
+    user.save();
+    return user;
+};
 /**
  * Test server
  */

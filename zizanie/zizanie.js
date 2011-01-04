@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Zizanie
  * Copyright (C) 2010 François de Metz
@@ -16,19 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var cmd = require('./zizanie/cmd').cmd;
 
-require('./zizanie/init').init(function(config, models) {
-    var commands = new cmd(config, models);
-    commands.on('end', function() {
-        models.close();
-    });
-    var args = process.ARGV;
-    // remove bin and path
-    args.shift();args.shift();
-    if (args.length == 0) {
-        commands.help();
-    } else {
-        commands.call(args.shift(), args);
-    }
+var express = require('express');
+var models = require('./models');
+var spore = require('spore');
+
+var app = express.createServer();
+
+require('./init').init(function(config, models) {
+    var zizanie = require('./server').zizanie;
+    new zizanie(app, config, models).init();
+    app.listen(config.port);
+    console.info("now listen on http://localhost:"+ config.port);
 });

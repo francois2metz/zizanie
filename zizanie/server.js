@@ -57,7 +57,7 @@ ZizanieController.prototype = {
             };
             //app.use(express.session({store: store}));
             app.use(express.session());
-            app.use(require(__dirname+ '/../../../node-facebook/lib/facebook').Facebook({
+            app.use(require(__dirname+ '/../../node-facebook/lib/facebook').Facebook({
                 apiKey    : config.facebook.appId,
                 apiSecret : config.facebook.secret
             }));
@@ -196,7 +196,7 @@ ZizanieController.prototype = {
         var middlewares = require('spore/middlewares');
         var oauth2 = middlewares.oauth2(access_token);
         var json = middlewares.json();
-        var client = spore.createClient(json, oauth2, __dirname +'/../../../api-description/services/facebook.json');
+        var client = spore.createClient(json, oauth2, __dirname +'/../../api-description/services/facebook.json');
         client.current_user(function(err, resp) {
             if (err) console.error(err);
             else console.log(JSON.parse(resp.body));
