@@ -46,12 +46,41 @@ Factories.createUser = function(db) {
 module.exports = {
     'index anonymous': function() {
         var server = express.createServer();
-        getInitConfig(function(config, models) {
-            new zizanie(server, config, models).init();
+        getInitConfig(function(config, db) {
+            new zizanie(server, config, db).init();
             assert.response(server,
                             {url: '/', method: 'GET'},
                             {status: 200, body: /input/g },
-                            function() { models.close();});
+                            function() { db.close();});
+        });
+    },
+    'user signin with failure': function() {
+        var server = express.createServer();
+        getInitConfig(function(config, db) {
+            new zizanie(server, config, db).init();
+            assert.response(server,
+                            {url: '/user/sign_in', method: 'POST', data: 'username=404', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
+                            {status: 302},
+                            function() { db.close();});
+        });
+    },
+    'user signin with success': function() {
+        var server = express.createServer();
+        getInitConfig(function(config, db) {
+//            var user = Factories.createUser(db);
+            new zizanie(server, config, db).init();
+            assert.response(server,
+                            {url: '/user/sign_in', method: 'POST', data: 'username=chuck&password=norris', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
+                            {status: 302},
+                            function(res){
+                                assert.response(server,
+                                                {url: '/',
+                                                 headers: {
+                                                     'Cookie' : res.headers['set-cookie']
+                                                 }},
+                                                {body: /Hello, chuck/},
+                                                function() { db.close();});
+                            });
         });
     }
 };

@@ -50,29 +50,36 @@ ZizanieController.prototype = {
         var config = this.config;
         app.configure(function() {
             app.use(express.cookieDecoder());
-            var store = {
-                cookie: {},
-                get: function() {},
-                set: function() {}
-            };
-            //app.use(express.session({store: store}));
-            app.use(express.session());
             app.use(require(__dirname+ '/../../node-facebook/lib/facebook').Facebook({
                 apiKey    : config.facebook.appId,
                 apiSecret : config.facebook.secret
             }));
             app.use(express.bodyDecoder());
-            var public_dir = __dirname + '/../../public';
+            var public_dir = __dirname + '/../public';
             app.use(express.compiler({ src: public_dir, enable: ['less'] }));
             app.use(express.staticProvider(public_dir));
             app.set('views', __dirname + '/templates');
             app.set('view engine', 'jade');
             app.use(self._layout());
-            app.use(self._session());
         });
 
         app.configure('development', function(){
+            app.use(express.session()); // memory store
             app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+        });
+
+        app.configure('production', function(){
+            app.use(express.session());
+            app.use(express.errorHandler());
+        });
+
+        app.configure('test', function() {
+            app.use(express.session({store: new express.session.MemoryStore({reapInterval: -1})}));
+            app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+        });
+
+        app.configure(function() {
+            app.use(self._session());
         });
     },
 
