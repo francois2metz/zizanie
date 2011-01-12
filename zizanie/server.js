@@ -45,23 +45,19 @@ function ZizanieController(app, config, db) {
 }
 ZizanieController.prototype = {
     _config: function() {
-        var self = this;
         var app = this.app;
-        var config = this.config;
-        app.configure(function() {
-            app.use(express.cookieDecoder());
-            app.use(require(__dirname+ '/../../node-facebook/lib/facebook').Facebook({
-                apiKey    : config.facebook.appId,
-                apiSecret : config.facebook.secret
-            }));
-            app.use(express.bodyDecoder());
-            var public_dir = __dirname + '/../public';
-            app.use(express.compiler({ src: public_dir, enable: ['less'] }));
-            app.use(express.staticProvider(public_dir));
-            app.set('views', __dirname + '/templates');
-            app.set('view engine', 'jade');
-            app.use(self._layout());
-        });
+
+        app.set('views', __dirname + '/templates');
+        app.set('view engine', 'jade');
+
+        app.use(express.cookieDecoder());
+        app.use(express.bodyDecoder());
+
+        var public_dir = __dirname + '/../public';
+        app.use(express.compiler({ src: public_dir, enable: ['less'] }));
+        app.use(express.staticProvider(public_dir));
+
+        app.use(this._configureFacebook());
 
         app.configure('development', function(){
             app.use(express.session()); // memory store
@@ -74,12 +70,24 @@ ZizanieController.prototype = {
         });
 
         app.configure('test', function() {
+            // special memory store for testing, doesn't reap old session
             app.use(express.session({store: new express.session.MemoryStore({reapInterval: -1})}));
             app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
         });
 
-        app.configure(function() {
-            app.use(self._session());
+        app.use(this._session());
+        app.use(this._layout());
+    },
+
+    /**
+     * Configure facebook
+     * should be disabled, facebook is bad
+     */
+    _configureFacebook: function() {
+        var config = this.config;
+        return require(__dirname+ '/../../node-facebook/lib/facebook').Facebook({
+            apiKey    : config.facebook.appId,
+            apiSecret : config.facebook.secret
         });
     },
 
@@ -131,6 +139,7 @@ ZizanieController.prototype = {
                 var session = req.fbSession();
                 that.db.model('User').findFacebookId(session.userId, function(result) {
                     if (result) {
+                        req.session.username = result.username;
                         req.logged = true;
                     }
                     next();

@@ -35,7 +35,7 @@ function Factories() {};
 Factories.prototype = {};
 Factories.createUser = function(db) {
     var user = new (db.model('User'))();
-    user.username = "chuck";
+    user.username = "chuck" + Math.random();
     user.auth.password = "norris";
     user.save();
     return user;
@@ -67,10 +67,10 @@ module.exports = {
     'user signin with success': function() {
         var server = express.createServer();
         getInitConfig(function(config, db) {
-//            var user = Factories.createUser(db);
+            var user = Factories.createUser(db);
             new zizanie(server, config, db).init();
             assert.response(server,
-                            {url: '/user/sign_in', method: 'POST', data: 'username=chuck&password=norris', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
+                            {url: '/user/sign_in', method: 'POST', data: 'username='+ user.username +'&password=norris', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
                             {status: 302},
                             function(res){
                                 assert.response(server,
@@ -78,9 +78,32 @@ module.exports = {
                                                  headers: {
                                                      'Cookie' : res.headers['set-cookie']
                                                  }},
-                                                {body: /Hello, chuck/},
-                                                function() { db.close();});
+                                                {body: new RegExp("Bonjour, "+ user.username)},
+                                                function() { user.remove(function() { db.close(); }); });
                             });
+        });
+    },
+    'user signin with facebook': function() {
+        var server = express.createServer();
+        getInitConfig(function(config, db) {
+            var user = Factories.createUser(db);
+            user.associateFacebookId('myfacebookid');
+            user.save();
+            var ziz = new zizanie(server, config, db);
+            // override node-facebook function
+            ziz._configureFacebook = function() {
+                return function(req, res, next) {
+                    req.fbSession = function() {
+                        return {userId: 'myfacebookid'};
+                    }
+                    next();
+                }
+            };
+            ziz.init();
+            assert.response(server,
+                            {url: '/'},
+                            {body: new RegExp("Bonjour, "+ user.username)},
+                            function() { user.remove(function() { user.remove(function() {db.close(); }); }) });
         });
     }
 };
