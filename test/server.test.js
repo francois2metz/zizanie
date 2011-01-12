@@ -70,7 +70,7 @@ module.exports = {
                         {status: 302},
                         function() { db.close();});
     }),
-    'user signin with success': zizanie_test(function(server, config, db, zizanie) {
+    'user signin with success and logout': zizanie_test(function(server, config, db, zizanie) {
         var user = Factories.createUser(db);
         zizanie.init();
         assert.response(server,
@@ -83,7 +83,25 @@ module.exports = {
                                                  'Cookie' : res.headers['set-cookie']
                                              }},
                                             {body: new RegExp("Bonjour, "+ user.username)},
-                                            function() { user.remove(function() { db.close(); }); });
+                                            function() {
+                                                assert.response(server,
+                                                                {url: '/user/logout',
+                                                                 method: 'POST',
+                                                                 headers: {
+                                                                     'Cookie' : res.headers['set-cookie']
+                                                                 }},
+                                                                {status: 302},
+                                                                function() {
+                                                                    assert.response(server,
+                                                                                    {url: '/',
+                                                                                     method: 'GET',
+                                                                                     headers: {
+                                                                                         'Cookie' : res.headers['set-cookie']
+                                                                                     }},
+                                                                                    {status: 200, body: /input/g },
+                                                                                    function() { user.remove(function() { db.close(); });});
+                                                                });
+                                            });
                         });
     }),
     'user signin with facebook': zizanie_test(function(server, condig, db, zizanie) {
