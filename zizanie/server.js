@@ -111,12 +111,13 @@ ZizanieController.prototype = {
         return function(req, res, next) {
             res.renderLogged = function(template, locals) {
                 res.render(template, {
+                    layout: 'layout_logged',
                     locals: locals
                 });
             };
             res.renderAnonymous = function(template, locals) {
                 res.render(template, {
-                    layout: 'anonymous',
+                    layout: 'layout_anonymous',
                     locals: locals
                 });
             };
@@ -156,10 +157,10 @@ ZizanieController.prototype = {
     index: function(req, res) {
         // normal session
         if (req.logged) {
-            res.renderLogged('logged', {username: req.session.username});
+            res.renderLogged('home_logged', {username: req.session.username});
             return;
         } else {
-            res.renderAnonymous('home', {});
+            res.renderAnonymous('home_anonymous', {});
         }
     },
     /**
