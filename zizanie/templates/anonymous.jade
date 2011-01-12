@@ -11,7 +11,7 @@ html(lang="fr")
       form(method="post", action="/user/sign_in")
         fieldset
           p
-            fb:login-button.facebook-login(perms="email", show-faces="false")
+            fb:login-button.hide_if_facebook_connected(show-faces="false")
           label Nom d'utilisateur
             input(type="text", name="username", required)
           label Mot de passe
@@ -29,6 +29,5 @@ html(lang="fr")
     script(type="text/javascript", src="/js/jquery-1.4.4.min.js")
     script(type="text/javascript", src="/js/underscore-min.js")
     script(type="text/javascript", src="/js/backbone-min.js")
-    script(type="text/javascript", src="/js/handlebars.js")
     script(type="text/javascript", src="/js/zizanie.js")
     script(type="text/javascript", src="http://connect.facebook.net/fr_FR/all.js")
