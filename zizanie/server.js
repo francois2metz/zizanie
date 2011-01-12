@@ -38,6 +38,8 @@ function ZizanieController(app, config, db) {
     this.routes = [
         {verb: 'get',  path: '/', fun: 'index'},
         {verb: 'post', path: '/user/sign_in', fun: 'sign_in'},
+        {verb: 'get',  path: '/user/account', fun: 'account'},
+        {verb: 'post', path: '/user/account', fun: 'update_account'},
         {verb: 'post', path: '/user/logout', fun: 'logout'},
         {verb: 'get',  path: '/facebook/canvas', fun: 'facebook_canvas'},
         {verb: 'get',  path: '/facebook/oauth_redirect', fun: 'facebook_oauth_redirect'}
@@ -126,7 +128,7 @@ ZizanieController.prototype = {
      * req.logged == true or false
      */
     _session: function() {
-        var that = this;
+        var that = this, session;
         return function(req, res, next) {
             req.logged = false;
             // normal session
@@ -135,8 +137,7 @@ ZizanieController.prototype = {
                 next();
             }
             // facebook session, whe must check if uid match a user
-            else if(req.fbSession()) {
-                var session = req.fbSession();
+            else if((session = req.fbSession())) {
                 that.db.model('User').findFacebookId(session.userId, function(result) {
                     if (result) {
                         req.session.username = result.username;
@@ -173,6 +174,37 @@ ZizanieController.prototype = {
                 res.redirect('/');
             }
         });
+    },
+    /**
+     * show account page
+     */
+    account: function(req, res) {
+        if (req.logged) {
+            res.renderLogged('account', {username: req.session.username});
+        } else {
+            res.redirect('/');
+        }
+    },
+    /**
+     * update account
+     * Associate facebookid
+     */
+    update_account: function(req, res) {
+        var fbSession = req.fbSession();
+        if (fbSession) {
+            this.db.model('User').findUsername(req.session.username, function(user) {
+                if (user) {
+                    user.associateFacebookId(fbSession.userId);
+                    user.save(function() {
+                        res.redirect('/user/account');
+                    });
+                } else {
+                    res.redirect('/user/account');
+                }
+            });
+        } else {
+            res.redirect('/user/account');
+        }
     },
     /**
      * user logout

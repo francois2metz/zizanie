@@ -40,70 +40,104 @@ Factories.createUser = function(db) {
     user.save();
     return user;
 };
+
+/**
+ * Basic test
+ */
+function zizanie_test(callback) {
+    return function() {
+        var server = express.createServer();
+        getInitConfig(function(config, db) {
+            callback(server, config, db, new zizanie(server, config, db));
+        });
+    };
+}
 /**
  * Test server
  */
 module.exports = {
-    'index anonymous': function() {
-        var server = express.createServer();
-        getInitConfig(function(config, db) {
-            new zizanie(server, config, db).init();
-            assert.response(server,
-                            {url: '/', method: 'GET'},
-                            {status: 200, body: /input/g },
-                            function() { db.close();});
-        });
-    },
-    'user signin with failure': function() {
-        var server = express.createServer();
-        getInitConfig(function(config, db) {
-            new zizanie(server, config, db).init();
-            assert.response(server,
-                            {url: '/user/sign_in', method: 'POST', data: 'username=404', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
-                            {status: 302},
-                            function() { db.close();});
-        });
-    },
-    'user signin with success': function() {
-        var server = express.createServer();
-        getInitConfig(function(config, db) {
-            var user = Factories.createUser(db);
-            new zizanie(server, config, db).init();
-            assert.response(server,
-                            {url: '/user/sign_in', method: 'POST', data: 'username='+ user.username +'&password=norris', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
-                            {status: 302},
-                            function(res){
-                                assert.response(server,
-                                                {url: '/',
-                                                 headers: {
-                                                     'Cookie' : res.headers['set-cookie']
-                                                 }},
-                                                {body: new RegExp("Bonjour, "+ user.username)},
-                                                function() { user.remove(function() { db.close(); }); });
-                            });
-        });
-    },
-    'user signin with facebook': function() {
-        var server = express.createServer();
-        getInitConfig(function(config, db) {
-            var user = Factories.createUser(db);
-            user.associateFacebookId('myfacebookid');
-            user.save();
-            var ziz = new zizanie(server, config, db);
-            // override node-facebook function
-            ziz._configureFacebook = function() {
-                return function(req, res, next) {
-                    req.fbSession = function() {
-                        return {userId: 'myfacebookid'};
-                    }
-                    next();
+    'index anonymous': zizanie_test(function(server, config, db, zizanie) {
+        zizanie.init();
+        assert.response(server,
+                        {url: '/', method: 'GET'},
+                        {status: 200, body: /input/g },
+                        function() { db.close();});
+    }),
+    'user signin with failure': zizanie_test(function(server, config, db, zizanie) {
+        zizanie.init();
+        assert.response(server,
+                        {url: '/user/sign_in', method: 'POST', data: 'username=404', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
+                        {status: 302},
+                        function() { db.close();});
+    }),
+    'user signin with success': zizanie_test(function(server, config, db, zizanie) {
+        var user = Factories.createUser(db);
+        zizanie.init();
+        assert.response(server,
+                        {url: '/user/sign_in', method: 'POST', data: 'username='+ user.username +'&password=norris', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
+                        {status: 302},
+                        function(res){
+                            assert.response(server,
+                                            {url: '/',
+                                             headers: {
+                                                 'Cookie' : res.headers['set-cookie']
+                                             }},
+                                            {body: new RegExp("Bonjour, "+ user.username)},
+                                            function() { user.remove(function() { db.close(); }); });
+                        });
+    }),
+    'user signin with facebook': zizanie_test(function(server, condig, db, zizanie) {
+        var user = Factories.createUser(db);
+        user.associateFacebookId('myfacebookid');
+        user.save();
+        // override node-facebook function
+        zizanie._configureFacebook = function() {
+            return function(req, res, next) {
+                req.fbSession = function() {
+                    return {userId: 'myfacebookid'};
                 }
-            };
-            ziz.init();
-            assert.response(server,
-                            {url: '/'},
-                            {body: new RegExp("Bonjour, "+ user.username)},
-                            function() { user.remove(function() { user.remove(function() {db.close(); }); }) });
-        });
-    }
+                next();
+            }
+        };
+        zizanie.init();
+        assert.response(server,
+                        {url: '/'},
+                        {body: new RegExp("Bonjour, "+ user.username)},
+                        function() { user.remove(function() { user.remove(function() {db.close(); }); }) });
+    }),
+    'user can associate facebook id with his account': zizanie_test(function(server, config, db, zizanie) {
+        var user = Factories.createUser(db);
+        var fbSession = {};
+        // override node-facebook function
+        zizanie._configureFacebook = function() {
+            return function(req, res, next) {
+                req.fbSession = function() {
+                    return fbSession;
+                }
+                next();
+            }
+        };
+        zizanie.init();
+        assert.response(server,
+                        {url: '/user/sign_in', method: 'POST', data: 'username='+ user.username +'&password=norris', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
+                        {status: 302},
+                        function(res){
+                            // populate facebookid
+                            fbSession.userId = 'myfacebookid';
+                            assert.response(server,
+                                            {url: '/user/account',
+                                             method: 'POST',
+                                             headers: {
+                                                 'Cookie' : res.headers['set-cookie']
+                                             }},
+                                            {status: 302},
+                                            function() {
+                                                // refetch current user
+                                                db.model('User').findUsername(user.username, function(user) {
+                                                    assert.equal(user.auth.facebook, 'myfacebookid');
+                                                    user.remove(function() { db.close(); });
+                                                })
+                                            });
+                        });
+    })
 };

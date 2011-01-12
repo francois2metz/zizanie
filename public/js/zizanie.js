@@ -30,9 +30,7 @@
             };
         },
 
-        index: function() {
-            new IndexView({el: $('body')});
-        }
+        index: function() {}
     });
 
     new ZizanieMainController();

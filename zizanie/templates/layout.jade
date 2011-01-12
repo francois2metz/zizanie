@@ -8,7 +8,9 @@ html(lang="fr")
       h1 Pazzis.com
 
     #sidebar
-      p Hello, #{username}.
+      p Bonjour, #{username}.
+      p
+        a(href="/user/account") Modifier votre compte.
       form(action="/user/logout", method="post")
         input(type="submit", value="Logout")
 
