@@ -17,17 +17,17 @@ Zizanie want to facilitate communication between family members.
 ## Install
 
     $> cp zizanie.yaml.sample zizanie.yaml
-    $> node zizanie/zizanie.js
+    $> node lib/zizanie/zizanie.js
 
 ## Utils
 
 Add user:
 
-    $> ./zizanie/zizanie_ctl.js adduser username
+    $> bin/zizanie adduser username
 
 Drop mongodb database:
 
-    $> ./zizanie/zizanie_ctl.js dropdb
+    $> bin/zizanie dropdb
 
 ## License
 

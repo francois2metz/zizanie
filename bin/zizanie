@@ -16,9 +16,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var cmd = require('./cmd').cmd;
+require.paths.unshift(__dirname+"/../lib/");
 
-require('./init').init(function(config, models) {
+var cmd = require('zizanie/cmd').cmd;
+
+require('zizanie/init').init(function(config, models) {
     var commands = new cmd(config, models);
     commands.on('end', function() {
         models.close();
