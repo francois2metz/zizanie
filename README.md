@@ -5,6 +5,8 @@ Zizanie want to facilitate communication between family members.
 * share files
 * share photo album
 
+Zizanie is a french word for discord.
+
 ## Dependencies:
 
 * mongodb
