@@ -40,11 +40,24 @@ Factories.createUser = function(db) {
     user.save();
     return user;
 };
-
+/**
+ * Signin user
+ */
+function userSignin(server, user, callback) {
+    assert.response(server,
+                    {url: '/user/sign_in',
+                     method: 'POST',
+                     data: 'username='+ user.username +'&password=norris',
+                     headers: {'Content-type': 'application/x-www-form-urlencoded'}},
+                    {status: 302},
+                    function(res) {
+                        callback(res.headers['set-cookie']);
+                    });
+}
 /**
  * Basic test
  */
-function zizanie_test(callback) {
+function zizanieTest(callback) {
     return function() {
         var server = express.createServer();
         getInitConfig(function(config, db) {
@@ -56,55 +69,52 @@ function zizanie_test(callback) {
  * Test server
  */
 module.exports = {
-    'index anonymous': zizanie_test(function(server, config, db, zizanie) {
+    'index anonymous': zizanieTest(function(server, config, db, zizanie) {
         zizanie.init();
         assert.response(server,
                         {url: '/', method: 'GET'},
                         {status: 200, body: /input/g },
                         function() { db.close();});
     }),
-    'user signin with failure': zizanie_test(function(server, config, db, zizanie) {
+    'user signin with failure': zizanieTest(function(server, config, db, zizanie) {
         zizanie.init();
         assert.response(server,
                         {url: '/user/sign_in', method: 'POST', data: 'username=404', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
                         {status: 302},
                         function() { db.close();});
     }),
-    'user signin with success and logout': zizanie_test(function(server, config, db, zizanie) {
+    'user signin with success and logout': zizanieTest(function(server, config, db, zizanie) {
         var user = Factories.createUser(db);
         zizanie.init();
-        assert.response(server,
-                        {url: '/user/sign_in', method: 'POST', data: 'username='+ user.username +'&password=norris', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
-                        {status: 302},
-                        function(res){
-                            assert.response(server,
-                                            {url: '/',
-                                             headers: {
-                                                 'Cookie' : res.headers['set-cookie']
-                                             }},
-                                            {body: new RegExp("Bonjour, "+ user.username)},
-                                            function() {
-                                                assert.response(server,
-                                                                {url: '/user/logout',
-                                                                 method: 'POST',
-                                                                 headers: {
-                                                                     'Cookie' : res.headers['set-cookie']
-                                                                 }},
-                                                                {status: 302},
-                                                                function() {
-                                                                    assert.response(server,
-                                                                                    {url: '/',
-                                                                                     method: 'GET',
-                                                                                     headers: {
-                                                                                         'Cookie' : res.headers['set-cookie']
-                                                                                     }},
-                                                                                    {status: 200, body: /input/g },
-                                                                                    function() { user.remove(function() { db.close(); });});
-                                                                });
-                                            });
-                        });
+        userSignin(server, user, function(cookie) {
+            assert.response(server,
+                            {url: '/',
+                             headers: {
+                                 'Cookie' : cookie
+                             }},
+                            {body: new RegExp("Bonjour, "+ user.username)},
+                            function() {
+                                assert.response(server,
+                                                {url: '/user/logout',
+                                                 method: 'POST',
+                                                 headers: {
+                                                     'Cookie' : cookie
+                                                 }},
+                                                {status: 302},
+                                                function() {
+                                                    assert.response(server,
+                                                                    {url: '/',
+                                                                     method: 'GET',
+                                                                     headers: {
+                                                                         'Cookie' : cookie
+                                                                     }},
+                                                                    {status: 200, body: /input/g },
+                                                                    function() { user.remove(function() { db.close(); });});
+                                                });
+                            });
+        });
     }),
-    'user signin with facebook': zizanie_test(function(server, condig, db, zizanie) {
+    'user signin with facebook': zizanieTest(function(server, config, db, zizanie) {
         var user = Factories.createUser(db);
         user.associateFacebookId('myfacebookid');
         user.save();
@@ -123,7 +133,7 @@ module.exports = {
                         {body: new RegExp("Bonjour, "+ user.username)},
                         function() { user.remove(function() { user.remove(function() {db.close(); }); }) });
     }),
-    'user can associate facebook id with his account': zizanie_test(function(server, config, db, zizanie) {
+    'user can associate facebook id with his account': zizanieTest(function(server, config, db, zizanie) {
         var user = Factories.createUser(db);
         var fbSession = {};
         // override node-facebook function
@@ -136,26 +146,69 @@ module.exports = {
             }
         };
         zizanie.init();
-        assert.response(server,
-                        {url: '/user/sign_in', method: 'POST', data: 'username='+ user.username +'&password=norris', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
-                        {status: 302},
-                        function(res){
-                            // populate facebookid
-                            fbSession.userId = 'myfacebookid';
-                            assert.response(server,
-                                            {url: '/user/account',
-                                             method: 'POST',
-                                             headers: {
-                                                 'Cookie' : res.headers['set-cookie']
-                                             }},
-                                            {status: 302},
-                                            function() {
-                                                // refetch current user
-                                                db.model('User').findUsername(user.username, function(user) {
-                                                    assert.equal(user.auth.facebook, 'myfacebookid');
-                                                    user.remove(function() { db.close(); });
-                                                })
-                                            });
-                        });
+        userSignin(server, user, function(cookie) {
+            // populate facebookid
+            fbSession.userId = 'myfacebookid';
+            assert.response(server,
+                            {url: '/user/account/facebook',
+                             method: 'POST',
+                             headers: {
+                                 'Cookie' : cookie
+                             }},
+                            {status: 302},
+                            function() {
+                                // refetch current user
+                                db.model('User').findUsername(user.username, function(user) {
+                                    assert.equal(user.auth.facebook, 'myfacebookid');
+                                    user.remove(function() { db.close(); });
+                                })
+                            });
+        });
+    }),
+    'user can update his password': zizanieTest(function(server, config, db, zizanie) {
+        var user = Factories.createUser(db);
+        zizanie.init();
+        userSignin(server, user, function(cookie) {
+            assert.response(server,
+                            {url: '/user/account/password',
+                             method: 'POST',
+                             data: "new_password=norris1&new_password_confirm=norris1",
+                             headers: {
+                                 'Cookie' : cookie,
+                                 'Content-type': 'application/x-www-form-urlencoded'
+                             }},
+                            {status: 302},
+                            function() {
+                                // refetch current user
+                                db.model('User').findUsername(user.username, function(user) {
+                                    assert.ok(user.checkPassword('norris1'));
+                                    user.remove(function() { db.close(); });
+                                });
+                            });
+
+        });
+    }),
+    'user cannot update his password if confirm != new_password': zizanieTest(function(server, config, db, zizanie) {
+        var user = Factories.createUser(db);
+        zizanie.init();
+        userSignin(server, user, function(cookie) {
+            assert.response(server,
+                            {url: '/user/account/password',
+                             method: 'POST',
+                             data: "new_password=norris1&new_password_confirm=sd",
+                             headers: {
+                                 'Cookie' : cookie,
+                                 'Content-type': 'application/x-www-form-urlencoded'
+                             }},
+                            {status: 302},
+                            function() {
+                                // refetch current user
+                                db.model('User').findUsername(user.username, function(user) {
+                                    assert.ok(user.checkPassword('norris'));
+                                    user.remove(function() { db.close(); });
+                                });
+                            });
+
+        });
     })
 };

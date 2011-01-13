@@ -1,9 +1,20 @@
 #main
   h1 Compte
 
+  form(method="post", action="/user/account/password")
+    fieldset
+      legend Modifier votre mot de passe
+      label Nouveau mot de passe
+        input(type="password", placeholder="nouveau mot de passe", name="new_password", required="required")
+      br
+      label Confirmez votre nouveau mot de passe
+        input(type="password", placeholder="nouveau mot de passe", name="new_password_confirm", required="required")
+      br
+      input(type="submit", value="Changer")
+
   h2 Facebook
 
-  form(method="post", action="/user/account")
+  form(method="post", action="/user/account/facebook")
     fieldset
       legend Associer votre compte facebook
       label Associer votre compte facebook avec votre compte pazzis.com, vous pourrez ensuite vous connecter avec votre compte facebook.
