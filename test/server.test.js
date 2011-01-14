@@ -79,7 +79,10 @@ module.exports = {
     'user signin with failure': zizanieTest(function(server, config, db, zizanie) {
         zizanie.init();
         assert.response(server,
-                        {url: '/user/sign_in', method: 'POST', data: 'username=404', headers: {'Content-type': 'application/x-www-form-urlencoded'}},
+                        {url: '/user/sign_in',
+                         method: 'POST',
+                         data: 'username=404',
+                         headers: {'Content-type': 'application/x-www-form-urlencoded'}},
                         {status: 302},
                         function() { db.close();});
     }),
@@ -131,7 +134,7 @@ module.exports = {
         assert.response(server,
                         {url: '/'},
                         {body: new RegExp("Bonjour, "+ user.username)},
-                        function() { user.remove(function() { user.remove(function() {db.close(); }); }) });
+                        function() { user.remove(function() { db.close(); }) });
     }),
     'user can associate facebook id with his account': zizanieTest(function(server, config, db, zizanie) {
         var user = Factories.createUser(db);
@@ -185,7 +188,6 @@ module.exports = {
                                     user.remove(function() { db.close(); });
                                 });
                             });
-
         });
     }),
     'user cannot update his password if confirm != new_password': zizanieTest(function(server, config, db, zizanie) {
