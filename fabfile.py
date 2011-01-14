@@ -11,6 +11,8 @@ def prepare_deploy():
     """
     Create archive
     """
+    # Create bundle ./node_modules
+    local('npm bundle')
     local('tar -czf /tmp/zizanie.tgz . --exclude-vcs', capture=False)
 
 def deploy():
