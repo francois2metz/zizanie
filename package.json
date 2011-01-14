@@ -1,0 +1,13 @@
+{
+  "name":"zizanie",
+  "version":"0.0.1",
+  "dependencies":{
+      "express" :"1.0.0",
+      "mongoose":"",
+      "yaml":"",
+      "less":"",
+      "spore":"",
+      "facebook-js":"",
+      "https://github.com/francois2metz/node-facebook/tarball/express_10":""
+  }
+}
