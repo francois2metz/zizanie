@@ -24,6 +24,12 @@ require('zizanie/init').init(function(config, models) {
     var commands = new cmd(config, models);
     commands.on('end', function() {
         models.close();
+        process.exit(0);
+    });
+    commands.on('error', function(err) {
+        console.error(err);
+        models.close();
+        process.exit(1);
     });
     var args = process.ARGV;
     // remove bin and path

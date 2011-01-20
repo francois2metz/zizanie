@@ -6,3 +6,9 @@ mongodb:
 facebook:
   appId: ''
   secret: ''
+mail:
+  host: ''
+  port: ''
+  sender: ''
+  username: ''
+  password: ''
