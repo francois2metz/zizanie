@@ -12,9 +12,14 @@ Zizanie is a french word for discord.
 * mongodb
 * nodejs
 * express
+* mongoose
+* facebook-js
+* facebook
+* jade
 * yaml
 * less
 * spore
+* mail
 
 ## Install
 
