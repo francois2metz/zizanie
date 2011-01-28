@@ -1,6 +1,6 @@
 /**
  * Zizanie
- * Copyright (C) 2010 François de Metz
+ * Copyright (C) 2011 François de Metz
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-var express = require('express');
-var zizanie = require('zizanie/server').zizanie;
-var models = require('zizanie/models');
-var assert = require('assert');
+
+var mail = require('./mail.mock.js');
+
+var assert = require('assert')
+  , express = require('express')
+;
+
+var zizanie = require('zizanie/server').zizanie
+  , models = require('zizanie/models')
+;
 
 function getInitConfig(callback) {
     require('zizanie/config').getConfig(function(config) {
@@ -32,11 +38,16 @@ function getInitConfig(callback) {
  * Factories
  */
 function Factories() {};
-Factories.prototype = {};
-Factories.createUser = function(db) {
+/**
+ * Create user for testing
+ */
+Factories.createUser = function(db, additionnal_properties) {
     var user = new (db.model('User'))();
     user.username = "chuck" + Math.random();
     user.auth.password = "norris";
+    for (var property in additionnal_properties) {
+        user[property] = additionnal_properties[property];
+    }
     user.save();
     return user;
 };
@@ -212,5 +223,53 @@ module.exports = {
                             });
 
         });
+    }),
+    'user can reset his password': zizanieTest(function(server, config, db, zizanie) {
+        var user = Factories.createUser(db, {email: 'francois@example.com'});
+        zizanie.init();
+        assert.response(server,
+                        {url: '/user/lost-password',
+                         method: 'POST',
+                         data: "username="+ user.username,
+                         headers: {
+                             'Content-type': 'application/x-www-form-urlencoded'
+                         }},
+                        {status: 200,
+                         body: /Un email vous a été envoyé/},
+                        function() {
+                            // check that emails have been sended
+                            assert.equal(mail.mails.length, 1);
+                            assert.eql(mail.mails[0].headers['to'], ['francois@example.com']);
+                            // find link and click !
+                            var r = mail.mails[0].body.match(new RegExp(config.base_url+"([^ ]+)"));
+                            assert.ok(r);
+			    // test with good token
+                            assert.response(
+                                server,
+                                {
+                                    url: r[1],
+                                    method: 'GET'
+                                },
+                                {status: 200,
+				 body : new RegExp(user.username)},
+                                function(res) {
+				    // test with bad token
+				    assert.response(
+					server,
+					{
+					    url: r[1] + 'sd',
+					    method: 'GET'
+					},
+					{status: 302,
+					 headers: {
+					     'Location': '/user/lost-password'
+					 }},
+					function(res) {
+					    user.remove(function() { db.close(); });
+					}
+				    )
+                                }
+                            )
+                        });
     })
 };

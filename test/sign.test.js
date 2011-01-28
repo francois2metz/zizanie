@@ -1,6 +1,6 @@
 /**
  * Zizanie
- * Copyright (C) 2010 François de Metz
+ * Copyright (C) 2011 François de Metz
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,13 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var express = require('express');
+var assert = require('assert');
+var sign = require('zizanie/sign');
 
-var app = express.createServer();
-
-require('./init').init(function(config, models) {
-    var zizanie = require('./server').zizanie;
-    new zizanie(app, config, models).init();
-    app.listen(config.port);
-    console.info("now listen on http://localhost:"+ config.port);
-});
+module.exports = {
+    'round trip with cipher/decipher': function() {
+        var data = 'hello';
+        var result1 = sign.cipher('secretsecret', data);
+        var result2 = sign.decipher('secretsecret', result1);
+        assert.ok(data == result2);
+    }
+};
