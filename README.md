@@ -32,6 +32,10 @@ Add user:
 
     $> bin/zizanie adduser username
 
+Check SMTP connection:
+
+    $> bin/zizanie check
+
 Drop mongodb database:
 
     $> bin/zizanie dropdb
