@@ -28,4 +28,4 @@ def start_server():
     TODO : Restart node
     """
     with cd(BASE_DIR):
-        run('node lib/zizanie/zizanie.js')
+        run('./bin/zizanie start')

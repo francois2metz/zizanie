@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Zizanie
- * Copyright (C) 2010 François de Metz
+ * Copyright (C) 2011 François de Metz
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,7 @@ require('zizanie/init').init(function(config, models) {
         models.close();
         process.exit(1);
     });
-    var args = process.ARGV;
+    var args = process.ARGV.slice(0);
     // remove bin and path
     args.shift();args.shift();
     if (args.length == 0) {

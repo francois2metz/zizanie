@@ -24,7 +24,7 @@ Zizanie is a french word for discord.
 ## Install
 
     $> cp zizanie.yaml.sample zizanie.yaml
-    $> node lib/zizanie/zizanie.js
+    $> bin/zizanie run
 
 ## Utils
 
