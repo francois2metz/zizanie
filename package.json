@@ -2,8 +2,8 @@
   "name":"zizanie",
   "version":"0.0.1",
   "dependencies":{
-      "express" :"1.0.0",
-      "mongoose":"",
+      "express" :"~1",
+      "mongoose":"~0.0",
       "yaml":"",
       "less":"",
       "spore":"",
