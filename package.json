@@ -1,16 +1,19 @@
 {
-  "name":"zizanie",
-  "version":"0.0.1",
-  "dependencies":{
-      "express" :"~1",
-      "mongoose":"~0.0",
-      "yaml":"",
-      "less":"",
-      "spore":"",
-      "facebook-js":"",
-      "jade":"",
-      "https://github.com/francois2metz/node-facebook/tarball/express_10":"",
-      "mail":"",
-      "fugue":""
+  "name":"zizanie"
+, "description": ""
+, "version":"0.0.1"
+, "author": "François de Metz <francois@2metz.fr>"
+, "bin" : "./bin/zizanie"
+, "dependencies":{
+    "express" :"~1",
+    "mongoose":"~1.0",
+    "yaml":"",
+    "less":"",
+    "spore":"",
+    "facebook-js":"",
+    "facebook": "",
+    "jade":"",
+    "mail":"",
+    "fugue":""
   }
 }
