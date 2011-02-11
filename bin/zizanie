@@ -20,8 +20,8 @@ require.paths.unshift(__dirname+"/../lib/");
 
 var cmd = require('zizanie/cmd').cmd;
 
-require('zizanie/init').init(function(config, models) {
-    var commands = new cmd(config, models);
+require('zizanie/init').init(function(config, db) {
+    var commands = new cmd(config, db);
     commands.on('end', function() {
         models.close();
         process.exit(0);
