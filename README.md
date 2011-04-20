@@ -23,6 +23,8 @@ Zizanie is a french word for discord.
 
 ## Install
 
+    $> git clone https://github.com/francois2metz/zizanie.git
+    $> cd zizanie
     $> cp zizanie.yaml.sample zizanie.yaml
     $> bin/zizanie run
 
