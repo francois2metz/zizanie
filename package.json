@@ -3,7 +3,7 @@
 , "description": ""
 , "version":"0.0.1"
 , "author": "François de Metz <francois@2metz.fr>"
-, "bin" : "./bin/zizanie"
+, "bin" : "./bin/zizanie.js"
 , "dependencies":{
     "express" :"~2",
     "mongoose":"~1.0",
