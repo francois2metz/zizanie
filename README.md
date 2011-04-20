@@ -42,6 +42,14 @@ Drop mongodb database:
 
     $> bin/zizanie dropdb
 
+Start zizanie with fugue:
+
+    $> bin/zizanie start
+
+Start zizanie:
+
+    $> bin/zizanie run
+
 ## License
 
 AGPL v3
