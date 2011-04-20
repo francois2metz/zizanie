@@ -1,6 +1,6 @@
 port: 3000
 base_url: ''
-# secret work for creating token
+# secret word for creating token
 secret: ''
 # where to write master pid when calling bin/zizanie start
 pid_file: ''
