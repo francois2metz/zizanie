@@ -24,8 +24,14 @@ def deploy():
         run('tar xzf zizanie.tgz')
 
 def start_server():
-    """
-    TODO : Restart node
-    """
     with cd(BASE_DIR):
-        run('./bin/zizanie start')
+        run('NODE_ENV=production nohup ./bin/zizanie start >& ~/zizanie.logs < /dev/null &')
+
+def restart_server():
+    with cd(BASE_DIR):
+        run('kill -USR2 `cat tmp/zizanie.pid`')
+
+def stop_server():
+    with cd(BASE_DIR):
+        run('kill `cat tmp/zizanie.pid`')
+        run('rm tmp/zizanie.pid')
