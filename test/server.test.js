@@ -28,12 +28,11 @@ var zizanie = require('zizanie/server').zizanie
 ;
 
 function getInitConfig(callback) {
-    require('zizanie/config').getConfig(function(config) {
-        // override default database
-        config.mongodb.db_name = 'zizanie-test';
-        var mongoose = models.configure(config);
-        callback(config, mongoose);
-    });
+    var config = require('zizanie/config').getConfig();
+    // override default database
+    config.mongodb.db_name = 'zizanie-test';
+    var mongoose = models.configure(config);
+    callback(config, mongoose);
 }
 /**
  * Factories
