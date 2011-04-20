@@ -23,12 +23,12 @@ var cmd = require('zizanie/cmd').cmd;
 require('zizanie/init').init(function(config, db) {
     var commands = new cmd(config, db);
     commands.on('end', function() {
-        models.close();
+        db.disconnect();
         process.exit(0);
     });
     commands.on('error', function(err) {
         console.error(err);
-        models.close();
+        db.disconnect();
         process.exit(1);
     });
     var args = process.ARGV.slice(0);
