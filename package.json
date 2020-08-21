@@ -6,7 +6,7 @@
 , "bin" : "./bin/zizanie.js"
 , "dependencies":{
     "express" :"~2",
-    "mongoose":"~1.0",
+    "mongoose":"~5.10",
     "yaml":"",
     "less":"",
     "spore":"",
